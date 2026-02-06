@@ -1,44 +1,53 @@
 import streamlit as st
+import pandas as pd
 
-def run_unit_5_flow():
-    st.title("Unit 5: Forms of Real Estate Ownership")
-    st.subheader("Visual Breakdown of Ownership Paths")
-
-    # Define the Flow Chart using DOT language
+def run_unit_5_flexflow():
+    st.set_page_config(layout="wide")
+    st.title("📂 Unit 5: Real Estate Ownership FlexFlow")
+    
+    # --- SECTION 1: VISUAL FLOW CHART ---
+    st.header("1. Ownership Structure Flow")
     ownership_chart = """
     digraph G {
-        node [shape=box, style=filled, color=lightblue, fontname="Helvetica"]
+        node [shape=box, style=filled, color=honeydew, fontname="Helvetica", penwidth=2]
+        edge [color=gray, penwidth=1.5]
         
-        Start [label="Real Estate Ownership", fillcolor=gold]
-        
-        # Level 1
-        Severalty [label="Ownership in Severalty\\n(Single Entity/Person)"]
-        CoOwnership [label="Co-Ownership\\n(Two or more)"]
-        Trust [label="Trusts\\n(Held for Beneficiary)"]
+        Start [label="Real Estate Title", fillcolor=gold]
+        Severalty [label="Severalty\\n(Single Entity)"]
+        CoOwnership [label="Co-Ownership\\n(Multiple Persons)"]
         
         Start -> Severalty
         Start -> CoOwnership
-        Start -> Trust
         
-        # Level 2 - Co-Ownership Branches
-        TIC [label="Tenancy in Common\\n(Inheritable share)"]
-        JT [label="Joint Tenancy\\n(Right of Survivorship)"]
-        TE [label="Tenancy by the Entirety\\n(Married Couples)"]
+        TIC [label="Tenancy in Common\\n(Default/Inheritable)"]
+        JT [label="Joint Tenancy\\n(Survivorship)"]
+        TE [label="Tenancy by the Entirety\\n(Married)"]
         
         CoOwnership -> TIC
         CoOwnership -> JT
         CoOwnership -> TE
-        
-        # Level 3 - The PITT requirements
-        PITT [label="PITT Requirements:\\nPossession, Interest, Time, Title", shape=ellipse, color=lightgreen]
-        JT -> PITT
     }
     """
-
-    # Display the chart in the Streamlit app
     st.graphviz_chart(ownership_chart)
 
-    st.info("💡 Tip: Use this chart to visualize how 'Right of Survivorship' differs between Joint Tenancy and Tenancy in Common.")
+    # --- SECTION 2: ACTIVE STRATEGY DATA CHART ---
+    st.header("2. Active Strategy Data Matrix")
+    st.write("Use this chart to differentiate the legal 'PITT' requirements and transferability.")
+
+    strategy_data = {
+        "Ownership Type": ["Severalty", "Tenancy in Common", "Joint Tenancy", "Tenancy by the Entirety"],
+        "Number of Owners": ["One", "Two or More", "Two or More", "Spouses Only"],
+        "Rights of Survivorship": ["No", "No", "Yes", "Yes"],
+        "PITT Required?": ["N/A", "Possession only", "P-I-T-T required", "P-I-T-T + Marriage"],
+        "Transferability": ["Full control", "Can sell share without consent", "Can sell share (breaks JT)", "Need spouse consent"]
+    }
+
+    df = pd.DataFrame(strategy_data)
+    
+    # Displaying as a styled table for that 'Active Chart' feel
+    st.table(df)
+
+    st.success("🎯 Strategy Note: If you see a question about heirs getting the property, look for 'Tenancy in Common'. If the partner gets it automatically, it's 'Joint Tenancy'.")
 
 if __name__ == "__main__":
-    run_unit_5_flow()
+    run_unit_5_flexflow()
