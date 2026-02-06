@@ -1,52 +1,78 @@
 import streamlit as st
-from graphviz import Digraph
 import pandas as pd
 
-st.set_page_config(page_title="Ohio Real Estate Chapter 2 Study", layout="wide")
+def run_unit_5_venn_flow():
+    st.set_page_config(layout="wide")
+    st.title("Unit 5: Tenancy Relationship Venn Flow")
+    st.subheader("Visualizing Overlaps in Co-Ownership")
 
-# Chapter 2 concepts and terms in chronological order
-data = [
-    {"Phase": 1, "Category": "Foundations", "Term": "Land, Real Estate, and Real Property"},
-    {"Phase": 1, "Category": "Foundations", "Term": "Physical Characteristics (Immobility, Indestructibility, Uniqueness)"},
-    {"Phase": 2, "Category": "Ownership Rights", "Term": "Bundle of Legal Rights"},
-    {"Phase": 2, "Category": "Ownership Rights", "Term": "Surface, Subsurface, and Air Rights"},
-    {"Phase": 2, "Category": "Ownership Rights", "Term": "Water Rights (Riparian and Littoral)"},
-    {"Phase": 3, "Category": "Property Types", "Term": "Personal Property vs. Real Property"},
-    {"Phase": 3, "Category": "Property Types", "Term": "Fixtures and Trade Fixtures"},
-    {"Phase": 3, "Category": "Property Types", "Term": "Emblements (Fructus Industriales)"},
-    {"Phase": 4, "Category": "Economic Factors", "Term": "Economic Characteristics (Scarcity, Improvements, Permanence)"},
-    {"Phase": 4, "Category": "Economic Factors", "Term": "Area Preference (Situs)"},
-    {"Phase": 5, "Category": "Industry Standards", "Term": "Ohio Real Estate Licensing Law"},
-    {"Phase": 5, "Category": "Industry Standards", "Term": "Professional Organizations (NAR, OAR, Local Boards)"}
-]
-df = pd.DataFrame(data)
+    # --- SECTION 1: VENN-STYLE RELATIONSHIP DIAGRAM ---
+    # This uses clusters to show how attributes like 'Survivorship' and 'Multi-Owner' overlap
+    venn_chart = """
+    digraph G {
+        compound=true;
+        node [fontname="Helvetica", fontsize=10];
+        rankdir=LR;
 
-st.title("📚 Chapter 2: Modern Real Estate Practice in Ohio")
-st.write("### Conceptual Roadmap & Term Relationships")
+        # The 'Two or More Owners' Group (All three sit in here)
+        subgraph cluster_multi {
+            label = "TWO OR MORE OWNERS";
+            style=filled;
+            color="#E8F4F8";
+            
+            # The 'Survivorship' Group (Only JT and TE overlap here)
+            subgraph cluster_survivor {
+                label = "RIGHT OF SURVIVORSHIP (PITT REQUIRED)";
+                style=filled;
+                color="#FFFACD";
+                
+                # The 'Married' Group (The innermost circle)
+                subgraph cluster_married {
+                    label = "MARRIED COUPLES ONLY";
+                    style=filled;
+                    color="#D4EDDA";
+                    TE [label="Tenancy by\\nthe Entirety", shape=doublecircle, fillcolor=white]
+                }
+                
+                JT [label="Joint Tenancy", shape=circle, fillcolor=white]
+            }
+            
+            TIC [label="Tenancy\\nin Common", shape=circle, fillcolor=white]
+        }
 
-# Visual Roadmap of Chapter 2
-dot = Digraph()
-dot.attr(rankdir='TB', size='10,10')
+        # Shared Logic Connections
+        TIC -> JT [label="Add Survivorship", style=dashed, color=gray]
+        JT -> TE [label="Add Marriage", style=dashed, color=gray]
+    }
+    """
+    st.graphviz_chart(venn_chart)
+    
+    
 
-# Create visual clusters for each phase of study
-for phase in sorted(df['Phase'].unique()):
-    with dot.subgraph(name=f'cluster_{phase}') as c:
-        category_name = df[df['Phase'] == phase]['Category'].iloc[0]
-        c.attr(label=f'SECTION {phase}: {category_name}', style='dashed', color='lightgrey')
-        
-        phase_items = df[df['Phase'] == phase]
-        for _, row in phase_items.iterrows():
-            # Color coding the study phases
-            colors = {1: "#e1f5fe", 2: "#fff9c4", 3: "#f1f8e9", 4: "#fce4ec", 5: "#f3e5f5"}
-            c.node(row['Term'], row['Term'], shape='box', style='filled', fillcolor=colors.get(phase, "#ffffff"))
+    # --- SECTION 2: ATTRIBUTE COMPARISON TABLE ---
+    st.header("Relationship Intersection Matrix")
+    
+    # This table aligns with the 'overlaps' in the diagram above
+    comparison_data = {
+        "Feature": ["Two or more owners", "Undivided Interest", "Inheritable (to heirs)", "Survivorship (to partners)", "Requires PITT", "Married Couples Only"],
+        "Tenancy in Common": ["✅ Yes", "✅ Yes", "✅ Yes", "❌ No", "❌ No", "❌ No"],
+        "Joint Tenancy": ["✅ Yes", "✅ Yes", "❌ No", "✅ Yes", "✅ Yes", "❌ No"],
+        "Tenancy by Entirety": ["✅ Yes", "✅ Yes", "❌ No", "✅ Yes", "✅ Yes", "✅ Yes"]
+    }
 
-# Establish chronological connections between concepts
-dot.edge("Land, Real Estate, and Real Property", "Bundle of Legal Rights")
-dot.edge("Bundle of Legal Rights", "Surface, Subsurface, and Air Rights")
-dot.edge("Surface, Subsurface, and Air Rights", "Personal Property vs. Real Property")
-dot.edge("Personal Property vs. Real Property", "Fixtures and Trade Fixtures")
-dot.edge("Fixtures and Trade Fixtures", "Economic Characteristics (Scarcity, Improvements, Permanence)")
-dot.edge("Economic Characteristics (Scarcity, Improvements, Permanence)", "Ohio Real Estate Licensing Law")
+    df = pd.DataFrame(comparison_data)
+    st.table(df)
 
-st.graphviz_chart(dot, width="stretch")
-st.table(df)
+    # --- SECTION 3: STRATEGY NOTE ---
+    st.markdown("""
+    <div style="background-color:#D4EDDA; padding:15px; border-radius:10px; border-left: 5px solid #28A745;">
+        <p style="color:#006400; margin:0; font-weight:bold;">
+            ✅ Strategy Note: In the diagram above, notice how Tenancy by the Entirety is 'nested' inside 
+            Survivorship and Multi-Ownership. It has the most requirements (PITT + Marriage) but the 
+            strongest protection!
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+if __name__ == "__main__":
+    run_unit_5_venn_flow()
