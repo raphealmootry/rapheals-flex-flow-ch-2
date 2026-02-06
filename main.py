@@ -8,7 +8,7 @@ def run_unit_5_flexflow():
     # --- SECTION 1: EXACT OWNERSHIP STRUCTURE FLOW ---
     st.header("1. Ownership Structure Flow")
     
-    # Using 'graphviz' to replicate the layout from your image
+    # Replicating the exact layout from your visual reference
     ownership_chart = """
     digraph G {
         node [shape=box, style=filled, color="#ADD8E6", fontname="Helvetica", margin=0.2]
@@ -35,7 +35,7 @@ def run_unit_5_flexflow():
         CoOwnership -> {TIC JT TE}
         JT -> PITT
 
-        # Force horizontal alignment for the middle row
+        # Force horizontal alignment for the middle rows
         {rank=same; Severalty; CoOwnership; Trusts;}
         {rank=same; TIC; JT; TE;}
     }
@@ -59,11 +59,13 @@ def run_unit_5_flexflow():
     df = pd.DataFrame(strategy_data)
     st.table(df)
 
-    # Strategy Note Footer
+    # --- SECTION 3: STRATEGY NOTE WITH DARK GREEN TEXT ---
     st.markdown("""
     <div style="background-color:#D4EDDA; padding:15px; border-radius:10px; border-left: 5px solid #28A745;">
-        <strong>✅ Strategy Note:</strong> If you see a question about heirs getting the property, it's <b>Tenancy in Common</b>. 
-        If the partner gets it automatically, it's <b>Joint Tenancy</b>.
+        <p style="color:#006400; margin:0; font-weight:bold;">
+            ✅ Strategy Note: If you see a question about heirs getting the property, it's Tenancy in Common. 
+            If the partner gets it automatically, it's Joint Tenancy.
+        </p>
     </div>
     """, unsafe_allow_html=True)
 
