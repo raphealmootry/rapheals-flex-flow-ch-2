@@ -1,52 +1,80 @@
 import streamlit as st
-from graphviz import Digraph
 import pandas as pd
 
-st.set_page_config(page_title="Ohio Real Estate Chapter 2 Study", layout="wide")
+def run_chapter_6_land_description():
+    st.set_page_config(layout="wide")
+    st.title("Chapter 6: Land Description FlexFlow")
 
-# Chapter 2 concepts and terms in chronological order
-data = [
-    {"Phase": 1, "Category": "Foundations", "Term": "Land, Real Estate, and Real Property"},
-    {"Phase": 1, "Category": "Foundations", "Term": "Physical Characteristics (Immobility, Indestructibility, Uniqueness)"},
-    {"Phase": 2, "Category": "Ownership Rights", "Term": "Bundle of Legal Rights"},
-    {"Phase": 2, "Category": "Ownership Rights", "Term": "Surface, Subsurface, and Air Rights"},
-    {"Phase": 2, "Category": "Ownership Rights", "Term": "Water Rights (Riparian and Littoral)"},
-    {"Phase": 3, "Category": "Property Types", "Term": "Personal Property vs. Real Property"},
-    {"Phase": 3, "Category": "Property Types", "Term": "Fixtures and Trade Fixtures"},
-    {"Phase": 3, "Category": "Property Types", "Term": "Emblements (Fructus Industriales)"},
-    {"Phase": 4, "Category": "Economic Factors", "Term": "Economic Characteristics (Scarcity, Improvements, Permanence)"},
-    {"Phase": 4, "Category": "Economic Factors", "Term": "Area Preference (Situs)"},
-    {"Phase": 5, "Category": "Industry Standards", "Term": "Ohio Real Estate Licensing Law"},
-    {"Phase": 5, "Category": "Industry Standards", "Term": "Professional Organizations (NAR, OAR, Local Boards)"}
-]
-df = pd.DataFrame(data)
+    # --- SECTION 1: LEGAL DESCRIPTION METHODS FLOW ---
+    st.header("1. Methods of Legal Description (Attribute Linked)")
+    
+    # Diagram logic: Categorizing the 3 primary ways land is legally identified
+    land_desc_chart = """
+    digraph G {
+        node [shape=box, style=filled, color="#F0FFF0", fontname="Helvetica", margin=0.2]
+        edge [color="#333333", penwidth=1.5]
 
-st.title("📚 Chapter 2: Modern Real Estate Practice in Ohio")
-st.write("### Conceptual Roadmap & Term Relationships")
+        # Root
+        Top [label="Legal Descriptions\\n(Defining Boundaries)", fillcolor="#FFD700", shape=rect]
 
-# Visual Roadmap of Chapter 2
-dot = Digraph()
-dot.attr(rankdir='TB', size='10,10')
+        # The Three Main Methods
+        MetesBounds [label="Metes & Bounds\\n(Oldest Method)", shape=diamond, fillcolor="#E0FFFF"]
+        GovSurvey [label="Government Survey\\n(Rectangular System)", shape=diamond, fillcolor="#E0FFFF"]
+        LotBlock [label="Lot & Block\\n(Recorded Plat)", shape=diamond, fillcolor="#E0FFFF"]
 
-# Create visual clusters for each phase of study
-for phase in sorted(df['Phase'].unique()):
-    with dot.subgraph(name=f'cluster_{phase}') as c:
-        category_name = df[df['Phase'] == phase]['Category'].iloc[0]
-        c.attr(label=f'SECTION {phase}: {category_name}', style='dashed', color='lightgrey')
+        # Metes & Bounds Path
+        Top -> MetesBounds
+        MetesBounds -> POB [label="Starts/Ends At"]
+        MetesBounds -> Monuments [label="Uses Markers"]
         
-        phase_items = df[df['Phase'] == phase]
-        for _, row in phase_items.iterrows():
-            # Color coding the study phases
-            colors = {1: "#e1f5fe", 2: "#fff9c4", 3: "#f1f8e9", 4: "#fce4ec", 5: "#f3e5f5"}
-            c.node(row['Term'], row['Term'], shape='box', style='filled', fillcolor=colors.get(phase, "#ffffff"))
+        # Government Survey Path
+        Top -> GovSurvey
+        GovSurvey -> PrincipalMeridians [label="North/South Lines"]
+        GovSurvey -> BaseLines [label="East/West Lines"]
+        GovSurvey -> Townships [label="6x6 Mile Grids"]
+        Townships -> Sections [label="36 per Township"]
 
-# Establish chronological connections between concepts
-dot.edge("Land, Real Estate, and Real Property", "Bundle of Legal Rights")
-dot.edge("Bundle of Legal Rights", "Surface, Subsurface, and Air Rights")
-dot.edge("Surface, Subsurface, and Air Rights", "Personal Property vs. Real Property")
-dot.edge("Personal Property vs. Real Property", "Fixtures and Trade Fixtures")
-dot.edge("Fixtures and Trade Fixtures", "Economic Characteristics (Scarcity, Improvements, Permanence)")
-dot.edge("Economic Characteristics (Scarcity, Improvements, Permanence)", "Ohio Real Estate Licensing Law")
+        # Lot & Block Path
+        Top -> LotBlock
+        LotBlock -> Subdivisions [label="Urban Areas"]
+        LotBlock -> PlatMap [label="Recorded Document"]
 
-st.graphviz_chart(dot, width="stretch")
-st.table(df)
+        # Nodes
+        POB [label="Point of Beginning", fillcolor="#FFFACD"]
+        Monuments [label="Monuments\\n(Natural or Man-made)"]
+        Sections [label="Sections\\n(1 sq mile / 640 acres)", fillcolor="#90EE90"]
+        PlatMap [label="Plat Map\\n(Public Record)"]
+
+        # Alignment
+        {rank=same; MetesBounds; GovSurvey; LotBlock;}
+    }
+    """
+    st.graphviz_chart(land_desc_chart)
+
+    # --- SECTION 2: LAND MEASUREMENT MATRIX ---
+    st.header("2. Land Measurement & Conversion Matrix")
+    st.write("Essential 'Math of Real Estate' for Chapter 6.")
+    
+    measurement_data = {
+        "Unit": ["1 Section", "1 Quarter Section", "1 Acre", "1 Mile (Linear)", "1 Township"],
+        "Contains": ["640 Acres", "160 Acres", "43,560 Sq Ft", "5,280 Feet", "36 Sections"],
+        "Description": ["1 x 1 Mile Square", "Used in Gov Survey", "7-11 Math: 4+3=7, 5+6=11", "Linear Measurement", "6 x 6 Mile Square"],
+        "Key Attribute": ["1 Square Mile", "Basis for Farmland", "Primary Unit for Lots", "Boundary Length", "Primary Survey Unit"]
+    }
+
+    df = pd.DataFrame(measurement_data)
+    st.table(df)
+
+    # --- SECTION 3: STRATEGY NOTE WITH DARK GREEN TEXT ---
+    st.markdown("""
+    <div style="background-color:#D4EDDA; padding:15px; border-radius:10px; border-left: 5px solid #28A745;">
+        <p style="color:#006400; margin:0; font-weight:bold;">
+            ✅ Negotiation Strategy: For your 44105 market, you will almost exclusively see "Lot & Block" descriptions 
+            on your Farringdon property deeds. However, keep the "43,560" number memorized—investors will always 
+            ask about the acreage vs. square footage when calculating buildable density!
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+if __name__ == "__main__":
+    run_chapter_6_land_description()
